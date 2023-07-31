@@ -26,6 +26,8 @@ class Planet(db.Model, SerializerMixin):
     nearest_star = db.Column(db.String)
 
     # Add relationship
+    # mission <-- backref from mission
+    scientists = association_proxy( 'missions', 'scientist' )
 
     # Add serialization rules
 
@@ -38,6 +40,8 @@ class Scientist(db.Model, SerializerMixin):
     field_of_study = db.Column(db.String)
 
     # Add relationship
+    # mission <-- backref from mission
+    planets = association_proxy( 'missions', 'planet' )
 
     # Add serialization rules
 
@@ -49,8 +53,12 @@ class Mission(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    scientist_id = db.Column(db.Integer, db.ForeignKey( 'scientists.id' ))
+    planet_id = db.Column(db.Integer, db.ForeignKey( 'planets.id' ))
 
     # Add relationships
+    scientist = db.relationship('Scientist', backref = 'mission')
+    planet = db.relationship('Planet', backref = 'mission')
 
     # Add serialization rules
 
