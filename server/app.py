@@ -38,7 +38,8 @@ def scientists():
                 field_of_study = data["field_of_study"]
             )
         except ValueError as v_error:
-            return make_response({"errors": [str(v_error)]}, 400)
+            #return make_response({"errors": [str(v_error)]}, 400)
+            return make_response({"errors": ["validation errors"]}, 400)
         db.session.add(new_scientist)
         db.session.commit()
         return make_response(new_scientist.to_dict(), 201)
@@ -47,12 +48,12 @@ def scientists():
 def scientists_by_id(id):
     scientist = Scientist.query.filter_by(id=id).first()
     if not scientist:
-        return make_response({"error": "Scientist not found"}, 200)
+        return make_response({"error": "Scientist not found"}, 404)
 
     if request.method == "DELETE":
         db.session.delete(scientist)
-        db.commit()
-        return make_response("", 200)
+        db.session.commit()
+        return make_response({}, 204)
     
     if request.method == 'PATCH':
         data = request.get_json()
@@ -60,7 +61,8 @@ def scientists_by_id(id):
             for attr in data:
                 setattr(scientist, attr, data[attr])
         except ValueError as v_error:
-            return make_response({"errors": [str(v_error)]}, 400)
+            #return make_response({"errors": [str(v_error)]}, 400)
+            return make_response({"errors": ["validation errors"]}, 400)
         db.session.commit()
         return make_response(scientist.to_dict(), 202)
 
@@ -86,10 +88,15 @@ def missions():
                 planet_id = data["planet_id"]
             )
         except ValueError as v_error:
-            return make_response({"errors": [str(v_error)]}, 400)
+            #return make_response({"errors": [str(v_error)]}, 400)
+            return make_response({"errors": ["validation errors"]}, 400)
         db.session.add(new_mission)
         db.session.commit()
-        return make_response(new_mission.to_dict(), 201)
+        mission_dict = {
+            **new_mission.to_dict(),
+            "scientist": new_mission.scientist.to_dict()
+        }
+        return make_response(mission_dict, 201)
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

@@ -42,7 +42,7 @@ class Scientist(db.Model, SerializerMixin):
     field_of_study = db.Column(db.String)
 
     # Add relationship
-    # missions <-- backref from mission
+    missions = db.relationship('Mission', back_populates = 'scientist', cascade = 'all, delete-orphan')
     planets = association_proxy( 'missions', 'planet' )
 
     # Add serialization rules
@@ -69,7 +69,7 @@ class Mission(db.Model, SerializerMixin):
     planet_id = db.Column(db.Integer, db.ForeignKey( 'planets.id' ))
 
     # Add relationships
-    scientist = db.relationship('Scientist', backref = 'missions')
+    scientist = db.relationship('Scientist', back_populates = 'missions')
     planet = db.relationship('Planet', backref = 'missions')
 
     # Add serialization rules
