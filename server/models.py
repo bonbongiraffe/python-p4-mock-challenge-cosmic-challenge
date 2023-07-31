@@ -26,11 +26,11 @@ class Planet(db.Model, SerializerMixin):
     nearest_star = db.Column(db.String)
 
     # Add relationship
-    # mission <-- backref from mission
+    # missions <-- backref from mission
     scientists = association_proxy( 'missions', 'scientist' )
 
     # Add serialization rules
-    serialize_rules = ('-scientist.planets',)
+    serialize_rules = ('-scientists','-missions',)
 
     # Add validation
 
@@ -42,11 +42,11 @@ class Scientist(db.Model, SerializerMixin):
     field_of_study = db.Column(db.String)
 
     # Add relationship
-    # mission <-- backref from mission
+    # missions <-- backref from mission
     planets = association_proxy( 'missions', 'planet' )
 
     # Add serialization rules
-    serialize_rules = ('-planet.scientists',)
+    serialize_rules = ('-planets','-missions',)
 
     # Add validation
     @validates ('name')
@@ -69,11 +69,11 @@ class Mission(db.Model, SerializerMixin):
     planet_id = db.Column(db.Integer, db.ForeignKey( 'planets.id' ))
 
     # Add relationships
-    scientist = db.relationship('Scientist', backref = 'mission')
-    planet = db.relationship('Planet', backref = 'mission')
+    scientist = db.relationship('Scientist', backref = 'missions')
+    planet = db.relationship('Planet', backref = 'missions')
 
     # Add serialization rules
-    serialize_rules = ('-planet.missions','-scientist.missions',)
+    serialize_rules = ('-planet.missions','-scientist',)
 
     # Add validation
     @validates ('name')
